@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjjcvd20efqhc"]
+
+[ext_resource type="PackedScene" uid="uid://g1n40lngkonj" path="res://addons/Maps/Scenes/forest_world.tscn" id="1_qx4gk"]
+[ext_resource type="Shader" uid="uid://bejskduvd10jo" path="res://spotlight.gdshader" id="2_0egju"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_edd7t"]
+shader = ExtResource("2_0egju")
+shader_parameter/circle_size = 0.5
+shader_parameter/feather = 0.05
+shader_parameter/circle_position = Vector2(0.5, 0.5)
+shader_parameter/screen_width = 1920.0
+shader_parameter/screen_height = 1080.0
+
+[node name="Filters" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+size = Vector2i(1152, 648)
+
+[node name="ForestWorld" parent="SubViewportContainer/SubViewport" instance=ExtResource("1_qx4gk")]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+modulate = Color(0.033853278, 0.033853278, 0.033853274, 0.23529412)
+material = SubResource("ShaderMaterial_edd7t")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

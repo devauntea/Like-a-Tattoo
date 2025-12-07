@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwqrfifgj21e"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_tnvn6"]
+size = Vector2(50, 200)
+
+[node name="ForestWorld" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(0.9999875, 0.005009074, 0, -0.005009074, 0.9999875, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_tnvn6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 83.471115, 46.716164)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
