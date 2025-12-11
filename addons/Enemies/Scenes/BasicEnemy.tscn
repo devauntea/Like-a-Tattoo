@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://by80ufx4abmou"]
+
+[ext_resource type="Script" uid="uid://my7c5kbdjhj6" path="res://addons/Enemies/Scripts/basic_enemy.gd" id="1_xeywe"]
+[ext_resource type="PackedScene" uid="uid://in8lq71ijd3e" path="res://addons/Enemies/Models/Killers/Character_Monster_04.fbx" id="2_frpf7"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_chxu1"]
+height = 1.1494141
+
+[node name="BasicEnemy" type="CharacterBody3D" groups=["Enemies"]]
+script = ExtResource("1_xeywe")
+max_health = 50.0
+detection_radius = 10.0
+attack_radius = 5.0
+
+[node name="Model" parent="." groups=["Enemies"] instance=ExtResource("2_frpf7")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 1.5517578, 0)
+shape = SubResource("CapsuleShape3D_chxu1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="DamageNumberSpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38097024, 5.0188847, 0)

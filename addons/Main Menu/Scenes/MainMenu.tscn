@@ -1,0 +1,174 @@
+[gd_scene load_steps=7 format=3 uid="uid://cjmihkmka1iqp"]
+
+[ext_resource type="Script" uid="uid://cjsy2oejmx3f6" path="res://addons/Main Menu/Scripts/MainMenu.gd" id="1_2vjmf"]
+[ext_resource type="Texture2D" uid="uid://doiut80pt74f1" path="res://addons/Backgrounds/LikeATatooMainMenu.jpg" id="2_r1mta"]
+[ext_resource type="FontFile" uid="uid://l68gc20o16hj" path="res://addons/Fonts/winter-song-font/WinterSong-owRGB.ttf" id="3_pasd2"]
+
+[sub_resource type="Animation" id="Animation_pasd2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VBoxContainer/TitleLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("VBoxContainer/PlayButton:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("VBoxContainer/HowToPlayButton:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_r1mta"]
+resource_name = "fade_in"
+length = 3.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VBoxContainer/TitleLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("VBoxContainer/PlayButton:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.3, 3.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("VBoxContainer/HowToPlayButton:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3, 3.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5uod7"]
+_data = {
+&"RESET": SubResource("Animation_pasd2"),
+&"fade_in": SubResource("Animation_r1mta")
+}
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2vjmf")
+main_game_scene_path = "uid://bruuq4ncfxavj"
+how_to_play_scene_path = "uid://dv0glt8wulomi"
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_r1mta")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_pasd2")
+theme_override_font_sizes/font_size = 100
+text = "Like a Tattoo"
+horizontal_alignment = 1
+
+[node name="PlayButton" type="Button" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Play Game
+"
+
+[node name="HowToPlayButton" type="Button" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "How to Play
+"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_5uod7")
+}
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -33.0
+offset_right = 85.0
+offset_bottom = 1.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "v 1.0"
+
+[node name="CopyrightLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -504.0
+offset_top = -40.0
+offset_right = -9.0
+offset_bottom = 53.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "© 2025 Cesar Franco & Devauntae Norman
+"

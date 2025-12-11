@@ -12,15 +12,14 @@ var desiredMoveSpeed : float
 @export var inAirMoveSpeedCurve : Curve
 var inputDirection : Vector2 
 var moveDirection : Vector3 
-@export var hitGroundCooldown : float #amount of time the character keep his accumulated speed before losing it (while being on ground)
+@export var hitGroundCooldown : float
 var hitGroundCooldownRef : float 
-@export var bunnyHopDmsIncre : float #bunny hopping desired move speed incrementer
+@export var bunnyHopDmsIncre : float
 @export var autoBunnyHop : bool = false
 var lastFramePosition : Vector3 
 var lastFrameVelocity : Vector3
 var wasOnFloor : bool
-var walkOrRun : String = "WalkState" #keep in memory if play char was walking or running before being in the air
-#for crouch visible changes
+var walkOrRun : String = "WalkState"
 @export var baseHitboxHeight : float
 @export var baseModelHeight : float
 @export var heightChangeSpeed : float
@@ -29,7 +28,7 @@ var walkOrRun : String = "WalkState" #keep in memory if play char was walking or
 @export var crouchSpeed : float
 @export var crouchAccel : float
 @export var crouchDeccel : float
-@export var continiousCrouch : bool = false #if true, doesn't need to keep crouch button on to crouch
+@export var continiousCrouch : bool = false
 @export var crouchHitboxHeight : float
 @export var crouchModelHeight : float
 
@@ -42,7 +41,7 @@ var walkOrRun : String = "WalkState" #keep in memory if play char was walking or
 @export var runSpeed : float
 @export var runAccel : float 
 @export var runDeccel : float 
-@export var continiousRun : bool = false #if true, doesn't need to keep run button on to run
+@export var continiousRun : bool = false
 
 @export_group("Jump variables")
 @export var jumpHeight : float
@@ -73,17 +72,47 @@ var coyoteJumpOn : bool = false
 @export var crouchAction : String = ""
 @export var jumpAction : String = ""
 
+@export_group("Health variables")
+@export var max_health: int = 100
+var health: int
+
+@export_group("Sanity variables")
+@export var max_sanity: int = 100
+var sanity: int
+
+@export_group("Regen variables")
+@export var health_regen_enabled: bool = true
+@export var health_regen_delay: float = 5.0     # seconds after last damage before regen starts
+@export var health_regen_amount: int = 5        # amount per tick
+
+@export var sanity_regen_enabled: bool = true
+@export var sanity_regen_delay: float = 5.0     # seconds after last sanity loss before regen starts
+@export var sanity_regen_amount: int = 5        # amount per tick
+
+var _health_regen_cooldown: float = 0.0
+var _sanity_regen_cooldown: float = 0.0
+
+signal health_changed(current: int, max: int)
+signal died
+signal sanity_changed(current: int, max: int)
+
 #references variables
 @onready var camHolder : Node3D = $CameraHolder
 @onready var model : MeshInstance3D = $Model
 @onready var hitbox : CollisionShape3D = $Hitbox
 @onready var stateMachine : Node = %StateMachine
-@onready var hud : CanvasLayer = $HUD
 @onready var ceilingCheck : RayCast3D = $Raycasts/CeilingCheck
 @onready var floorCheck : RayCast3D = $Raycasts/FloorCheck
 
+# HUD will be found by group at runtime (group "HUD" on the HUD root CanvasLayer)
+var hud: CanvasLayer = null
+
+
 func _ready():
-	#set move variables, and value references
+	# capture mouse for looking
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	# set move variables, and value references
 	moveSpeed = walkSpeed
 	moveAccel = walkAccel
 	moveDeccel = walkDeccel
@@ -92,6 +121,28 @@ func _ready():
 	jumpCooldownRef = jumpCooldown
 	nbJumpsInAirAllowedRef = nbJumpsInAirAllowed
 	coyoteJumpCooldownRef = coyoteJumpCooldown
+
+	# init health
+	health = max_health
+	emit_signal("health_changed", health, max_health)
+
+	# init sanity
+	sanity = max_sanity
+	emit_signal("sanity_changed", sanity, max_sanity)
+
+	# init regen cooldowns
+	_health_regen_cooldown = health_regen_delay
+	_sanity_regen_cooldown = sanity_regen_delay
+
+	# find HUD by group
+	hud = get_tree().get_first_node_in_group("HUD") as CanvasLayer
+
+	# update HUD if it supports these calls
+	if hud != null:
+		if hud.has_method("displayHealth"):
+			hud.displayHealth(health, max_health)
+		if hud.has_method("displaySanity"):
+			hud.displaySanity(sanity, max_sanity)
 	
 func _process(_delta: float):
 	displayProperties()
@@ -104,29 +155,36 @@ func _physics_process(delta: float) -> void:
 	_apply_movement(delta)
 	gravityApply(delta)
 	move_and_slide()
+	_update_regen(delta)
 	
 func displayProperties():
 	#display properties on the hud
 	if hud != null:
-		hud.displayCurrentState(stateMachine.currStateName)
-		hud.displayCurrentDirection(moveDirection)
-		hud.displayDesiredMoveSpeed(desiredMoveSpeed)
-		hud.displayVelocity(velocity.length())
-		hud.displayNbJumpsInAirAllowed(nbJumpsInAirAllowed)
+		if hud.has_method("displayCurrentState"):
+			hud.displayCurrentState(stateMachine.currStateName)
+		if hud.has_method("displayCurrentDirection"):
+			hud.displayCurrentDirection(moveDirection)
+		if hud.has_method("displayDesiredMoveSpeed"):
+			hud.displayDesiredMoveSpeed(desiredMoveSpeed)
+		if hud.has_method("displayVelocity"):
+			hud.displayVelocity(velocity.length())
+		if hud.has_method("displayNbJumpsInAirAllowed"):
+			hud.displayNbJumpsInAirAllowed(nbJumpsInAirAllowed)
+		if hud.has_method("displaySanity"):
+			hud.displaySanity(sanity, max_sanity)
 		
 func modifyPhysicsProperties():
-	lastFramePosition = position #get play char position every frame
-	lastFrameVelocity = velocity #get play char velocity every frame
-	wasOnFloor = !is_on_floor() #check if play char was on floor every frame
+	lastFramePosition = position
+	lastFrameVelocity = velocity
+	wasOnFloor = !is_on_floor()
 	
 func gravityApply(delta : float):
-	#if play char goes up, apply jump gravity
-	#otherwise, apply fall gravity
-	if velocity.y >= 0.0: velocity.y += jumpGravity * delta
-	elif velocity.y < 0.0: velocity.y += fallGravity * delta
+	if velocity.y >= 0.0:
+		velocity.y += jumpGravity * delta
+	elif velocity.y < 0.0:
+		velocity.y += fallGravity * delta
 
 func _get_input() -> void:
-	# Read WASD (or whatever you bound) into a 2D vector
 	inputDirection = Vector2(
 		Input.get_action_strength(moveRightAction) - Input.get_action_strength(moveLeftAction),
 		Input.get_action_strength(moveForwardAction) - Input.get_action_strength(moveBackwardAction)
@@ -135,11 +193,9 @@ func _get_input() -> void:
 	if inputDirection.length() > 1.0:
 		inputDirection = inputDirection.normalized()
 	
-	# Convert that into a 3D world-space direction based on the camera
 	var forward: Vector3 = -camHolder.global_transform.basis.z
 	var right: Vector3 = camHolder.global_transform.basis.x
 
-	# Stay on the XZ plane
 	forward.y = 0.0
 	right.y = 0.0
 	forward = forward.normalized()
@@ -148,7 +204,6 @@ func _get_input() -> void:
 	moveDirection = (forward * inputDirection.y) + (right * inputDirection.x)
 
 func _handle_run_and_crouch() -> void:
-	# Decide which movement mode we're in and set speed/accel/deccel
 	if Input.is_action_pressed(crouchAction):
 		moveSpeed = crouchSpeed
 		moveAccel = crouchAccel
@@ -171,17 +226,12 @@ func _handle_jump() -> void:
 			velocity.y = jumpVelocity
 
 func _apply_movement(delta: float) -> void:
-	# Target horizontal velocity based on moveDirection and moveSpeed
 	var target_velocity_xz: Vector3 = moveDirection * moveSpeed
-
-	# Current horizontal velocity (ignore Y for accel/deccel)
 	var current_velocity_xz: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
 
 	if moveDirection.length() > 0.0:
-		# Accelerate towards target
 		current_velocity_xz = current_velocity_xz.lerp(target_velocity_xz, moveAccel * delta)
 	else:
-		# No input: decelerate to stop
 		current_velocity_xz = current_velocity_xz.lerp(Vector3.ZERO, moveDeccel * delta)
 
 	velocity.x = current_velocity_xz.x
@@ -190,3 +240,105 @@ func _apply_movement(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("quit_game"):
 		get_tree().quit()
+
+	# TEMP sanity test: press ui_cancel to lose 5 sanity
+	if event.is_action_pressed("ui_cancel"):
+		lose_sanity(5)
+
+# =========================
+# HEALTH API
+# =========================
+func apply_damage(amount: int) -> void:
+	if amount <= 0:
+		return
+	if health <= 0:
+		return
+
+	health = max(health - amount, 0)
+	emit_signal("health_changed", health, max_health)
+
+	# reset health regen timer
+	_health_regen_cooldown = health_regen_delay
+
+	if hud != null and hud.has_method("displayHealth"):
+		hud.displayHealth(health, max_health)
+
+	if health == 0:
+		_die()
+
+
+func heal(amount: int) -> void:
+	if amount <= 0:
+		return
+	if health <= 0:
+		return
+
+	health = min(health + amount, max_health)
+	emit_signal("health_changed", health, max_health)
+
+	if hud != null and hud.has_method("displayHealth"):
+		hud.displayHealth(health, max_health)
+
+# =========================
+# SANITY API
+# =========================
+func lose_sanity(amount: int) -> void:
+	if amount <= 0:
+		return
+	if sanity <= 0:
+		return
+
+	sanity = max(sanity - amount, 0)
+	emit_signal("sanity_changed", sanity, max_sanity)
+
+	# reset sanity regen timer
+	_sanity_regen_cooldown = sanity_regen_delay
+
+	if hud != null and hud.has_method("displaySanity"):
+		hud.displaySanity(sanity, max_sanity)
+
+	if sanity == 0:
+		print("All sanity lost!")
+
+
+func restore_sanity(amount: int) -> void:
+	if amount <= 0:
+		return
+	if sanity >= max_sanity:
+		return
+
+	sanity = min(sanity + amount, max_sanity)
+	emit_signal("sanity_changed", sanity, max_sanity)
+
+	if hud != null and hud.has_method("displaySanity"):
+		hud.displaySanity(sanity, max_sanity)
+
+# =========================
+# REGEN TICK
+# =========================
+func _update_regen(delta: float) -> void:
+	# HEALTH REGEN
+	if health_regen_enabled and health > 0 and health < max_health:
+		if _health_regen_cooldown > 0.0:
+			_health_regen_cooldown = max(_health_regen_cooldown - delta, 0.0)
+		else:
+			heal(health_regen_amount)
+			_health_regen_cooldown = health_regen_delay
+	else:
+		_health_regen_cooldown = health_regen_delay
+
+	# SANITY REGEN
+	if sanity_regen_enabled and sanity < max_sanity:
+		if _sanity_regen_cooldown > 0.0:
+			_sanity_regen_cooldown = max(_sanity_regen_cooldown - delta, 0.0)
+		else:
+			restore_sanity(sanity_regen_amount)
+			_sanity_regen_cooldown = sanity_regen_delay
+	else:
+		_sanity_regen_cooldown = sanity_regen_delay
+
+
+func _die() -> void:
+	emit_signal("died")
+	print("Player died")
+	# later: trigger respawn / game over here

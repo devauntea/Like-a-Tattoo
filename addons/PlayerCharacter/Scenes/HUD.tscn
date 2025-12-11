@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtlg1oiexn3b0"]
+
+[ext_resource type="Script" uid="uid://7vmsmi38tw62" path="res://addons/PlayerCharacter/Scenes/hud.gd" id="1_sh3c5"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_sh3c5")
+
+[node name="DarkenOverlay" type="ColorRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="HealthLabel" type="Label" parent="."]
+offset_left = 524.0
+offset_top = -2.0
+offset_right = 586.0
+offset_bottom = 23.0
+text = "Health: 100/100"
+
+[node name="SanityLabel" type="Label" parent="."]
+offset_left = 525.0
+offset_top = 19.0
+offset_right = 643.0
+offset_bottom = 68.0
+text = "Sanity: 100/100
+"

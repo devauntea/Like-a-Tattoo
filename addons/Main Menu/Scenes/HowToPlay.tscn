@@ -1,0 +1,183 @@
+[gd_scene load_steps=6 format=3 uid="uid://dv0glt8wulomi"]
+
+[ext_resource type="Script" uid="uid://by1wwav1ibylj" path="res://addons/Main Menu/Scripts/HowToPlay.gd" id="1_7b0nx"]
+[ext_resource type="Texture2D" uid="uid://c8owsmoicq75q" path="res://addons/Backgrounds/LikeATattooHowToPlay4.jpg" id="2_ppyry"]
+
+[sub_resource type="Animation" id="Animation_pykg7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MarginContainer/VBoxContainer/TitleLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MarginContainer/VBoxContainer/Backstory:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MarginContainer/VBoxContainer/BackButton:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_ppyry"]
+resource_name = "fade_in"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MarginContainer/VBoxContainer/TitleLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MarginContainer/VBoxContainer/Backstory:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MarginContainer/VBoxContainer/BackButton:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.5, 4.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_v1snv"]
+_data = {
+&"RESET": SubResource("Animation_pykg7"),
+&"fade_in": SubResource("Animation_ppyry")
+}
+
+[node name="HowToPlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7b0nx")
+main_menu_scene_path = "uid://cjmihkmka1iqp"
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ppyry")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 1143.0
+offset_bottom = 590.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 64
+text = "How to Play"
+
+[node name="Backstory" type="Label" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Backstory
+Sergeant Koll Schwarber, a war veteran plagued by PTSD and terrifying visions of shadow-like entities, escapes St. Vale Psychiatric Ward after his doctor dismisses his experiences. Convinced his home lies somewhere beyond an abandoned forest, Koll sets out alone, desperate to reclaim his sanity.
+
+How to Play
+- Move: WASD
+- Run: Shift
+- Crouch: Ctrl
+- Jump: Space
+- Shoot: Left Mouse
+"
+autowrap_mode = 3
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 32
+text = "Back to Main Menu
+"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_v1snv")
+}
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -33.0
+offset_right = 85.0
+offset_bottom = 1.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "v 1.0"
+
+[node name="CopyrightLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -505.0
+offset_top = -41.0
+offset_right = -10.0
+offset_bottom = 52.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "© 2025 Cesar Franco & Devauntae Norman
+"
