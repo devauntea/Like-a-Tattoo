@@ -1,12 +1,12 @@
 extends CharacterBody3D
 class_name BasicEnemy
 
-@export var max_health: float = 100.0
+@export var max_health: float = 50.0
 @export var can_display_damage_number: bool = true
 
 # Movement / AI settings
 @export var move_speed: float = 3.0
-@export var detection_radius: float = 1.0      # start chasing at this distance
+@export var detection_radius: float = 100.0      # start chasing at this distance
 @export var gravity: float = 9.8
 
 # Attack settings (health damage)

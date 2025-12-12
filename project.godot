@@ -20,6 +20,11 @@ config/icon="res://icon.svg"
 DamageNumberScript="*res://addons/Targets/Scripts/DamageNumberScript.gd"
 MusicManager="*res://addons/Main Menu/Scripts/MusicManager.gd"
 
+[display]
+
+window/size/mode=4
+window/stretch/mode="viewport"
+
 [filesystem]
 
 import/blender/enabled=false

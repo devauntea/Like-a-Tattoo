@@ -6,6 +6,13 @@ class_name ForestGenerator
 @export var origin := Vector3.ZERO
 @export var ground_y := 0.0
 
+@export_category("Exclusions")
+@export var house_finish: Node3D
+@export var house_clear_radius := 18.0
+@export var exclusion_nodes: Array[Node3D] = []
+@export var exclusion_radius := 18.0
+
+
 @export_category("Ground")
 @export var ground: Node3D
 @export var use_ground_aabb := true
@@ -85,7 +92,6 @@ func generate() -> void:
 	branches.shuffle()
 	for i in range(min(misleading_count, branches.size())):
 		trail_paths.append(branches[i])
-	# Optionally add a LITTLE trail on the real path (subtle)
 	if _rng.randf() < (1.0 - trail_mislead_ratio) and _rng.randf() < 0.35:
 		trail_paths.append(_subsection(main_path, 0.15, 0.55))
 
@@ -101,13 +107,26 @@ func generate() -> void:
 	# 4) Place trails (can be MeshInstances, because count is usually smaller)
 	_place_trails(trail_paths)
 
+func _is_in_exclusion(p: Vector3, extra_radius := 0.0) -> bool:
+	for n in exclusion_nodes:
+		if n == null:
+			continue
+		var d := Vector2(p.x, p.z).distance_to(Vector2(n.global_position.x, n.global_position.z))
+		if d < (exclusion_radius + extra_radius):
+			return true
+	return false
+
+
+func _distance_to_exclusions(p: Vector3) -> float:
+	var best := INF
+	if house_finish != null:
+		var d := Vector2(p.x, p.z).distance_to(Vector2(house_finish.global_position.x, house_finish.global_position.z)) - house_clear_radius
+		best = min(best, d)
+	return best
+
 func _clear_previous() -> void:
 	for c in get_children():
 		c.queue_free()
-
-# ----------------------------
-# Path generation
-# ----------------------------
 
 func _make_path_polyline(points_count: int, start_edge: bool) -> PackedVector3Array:
 	# Start on one edge, end on the opposite, with a noisy walk
@@ -170,9 +189,7 @@ func _subsection(path: PackedVector3Array, a: float, b: float) -> PackedVector3A
 		out.append(path[i])
 	return out
 
-# ----------------------------
 # Scattering (MultiMesh)
-# ----------------------------
 
 func _scatter_group_multimesh(
 	scenes: Array[PackedScene],
@@ -203,6 +220,14 @@ func _scatter_group_multimesh(
 
 		# avoid paths
 		if _distance_to_paths(pos, paths) < avoid_radius:
+			continue
+		
+		# avoid house/building clearing
+		if _is_in_exclusion(pos):
+			continue
+
+		# avoid house clearing
+		if _distance_to_exclusions(pos) < 0.0:
 			continue
 
 		# simple spacing vs same group
