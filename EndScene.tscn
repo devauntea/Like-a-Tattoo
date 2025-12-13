@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://ffhxmys2hydf"]
+[gd_scene load_steps=2 format=3 uid="uid://ffhxmys2hydf"]
+
+[ext_resource type="Script" uid="uid://dw57hl2ar24x" path="res://EndScene.gd" id="1_2fn36"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_2fn36")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -14,8 +17,12 @@ color = Color(0, 0, 0, 1)
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Label" type="Label" parent="CenterContainer"]
+[node name="DialogueLabel" type="Label" parent="CenterContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "THE END"
 horizontal_alignment = 1
+
+[node name="ReturnTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true

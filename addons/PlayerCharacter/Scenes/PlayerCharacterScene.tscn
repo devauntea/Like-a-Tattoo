@@ -1,7 +1,8 @@
-[gd_scene load_steps=85 format=4 uid="uid://bwggrf7sbmkcv"]
+[gd_scene load_steps=86 format=4 uid="uid://bwggrf7sbmkcv"]
 
 [ext_resource type="Script" uid="uid://d3s8yxuvpmekm" path="res://addons/PlayerCharacter/Scripts/StateMachine/PlayerCharacterScript.gd" id="1_834nb"]
 [ext_resource type="Script" uid="uid://sca7ypsol83f" path="res://addons/PlayerCharacter/Scripts/StateMachine/StateMachineScript.gd" id="2_834nb"]
+[ext_resource type="PackedScene" uid="uid://cchlhsb5ddgi5" path="res://addons/Cutscenes/Scenes/SanityGameOverCutscene.tscn" id="2_mdlbe"]
 [ext_resource type="Script" uid="uid://b0fbr48rbvn27" path="res://addons/PlayerCharacter/Scripts/Camera/CameraScript.gd" id="2_x12n0"]
 [ext_resource type="Script" uid="uid://cnpa03x4ajc8b" path="res://addons/PlayerCharacter/Scripts/Misc/LinkComponentScript.gd" id="3_7xxc0"]
 [ext_resource type="Script" uid="uid://stil4xkf3tk0" path="res://addons/PlayerCharacter/Scripts/StateMachine/IdleStateScript.gd" id="3_ca0qr"]
@@ -1230,6 +1231,7 @@ moveRightAction = "moveRight"
 runAction = "run"
 crouchAction = "crouch"
 jumpAction = "jump"
+sanity_game_over_cutscene = ExtResource("2_mdlbe")
 
 [node name="LinkComponent" type="Node3D" parent="."]
 unique_name_in_owner = true

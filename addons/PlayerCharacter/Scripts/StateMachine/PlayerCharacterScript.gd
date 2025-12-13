@@ -80,6 +80,11 @@ var health: int
 @export var max_sanity: int = 100
 var sanity: int
 
+# === SANITY GAME OVER CUTSCENE ===
+@export var sanity_game_over_cutscene: PackedScene
+var sanity_game_over_triggered: bool = false
+# =================================
+
 @export_group("Regen variables")
 @export var health_regen_enabled: bool = true
 @export var health_regen_delay: float = 5.0     # seconds after last damage before regen starts
@@ -146,6 +151,7 @@ func _ready():
 	
 func _process(_delta: float):
 	displayProperties()
+	_check_sanity_game_over() # <- sanity 0 check every frame
 	
 func _physics_process(delta: float) -> void:
 	modifyPhysicsProperties() 
@@ -297,8 +303,9 @@ func lose_sanity(amount: int) -> void:
 	if hud != null and hud.has_method("displaySanity"):
 		hud.displaySanity(sanity, max_sanity)
 
-	if sanity == 0:
-		print("All sanity lost!")
+	if sanity == 0 and not sanity_game_over_triggered:
+		sanity_game_over_triggered = true
+		_trigger_sanity_cutscene()
 
 
 func restore_sanity(amount: int) -> void:
@@ -312,6 +319,14 @@ func restore_sanity(amount: int) -> void:
 
 	if hud != null and hud.has_method("displaySanity"):
 		hud.displaySanity(sanity, max_sanity)
+
+# Helper to check sanity every frame (in case sanity is modified elsewhere)
+func _check_sanity_game_over() -> void:
+	if sanity_game_over_triggered:
+		return
+	if sanity <= 0:
+		sanity_game_over_triggered = true
+		_trigger_sanity_cutscene()
 
 # =========================
 # REGEN TICK
@@ -341,4 +356,20 @@ func _update_regen(delta: float) -> void:
 func _die() -> void:
 	emit_signal("died")
 	print("Player died")
-	# later: trigger respawn / game over here
+	get_tree().change_scene_to_file("res://addons/Main Menu/Scenes/MainMenu.tscn")
+
+# === SANITY GAME OVER CUTSCENE ===
+func _trigger_sanity_cutscene() -> void:
+	if sanity_game_over_cutscene:
+		var cutscene := sanity_game_over_cutscene.instantiate()
+		# Attach to current scene, so it gets freed when we change scenes
+		var current_scene := get_tree().current_scene
+		if current_scene:
+			current_scene.add_child(cutscene)
+		else:
+			# Fallback: if no current scene, add to root
+			get_tree().root.add_child(cutscene)
+	else:
+		# Fallback: go directly to main menu if no cutscene scene is assigned.
+		get_tree().change_scene_to_file("res://addons/Main Menu/Scenes/MainMenu.tscn")
+# =================================

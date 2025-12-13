@@ -13,13 +13,8 @@ func _on_body_entered(body: Node) -> void:
 	print(body)
 	if body.is_in_group(player_group):
 		get_tree().change_scene_to_file("res://EndScene.tscn")
-		
-	if _done:
-		return
 	if not body.is_in_group(player_group):
 		return
-
-	_done = true
 
 	# Freeze the player (simple + safe)
 	if body.has_method("set_physics_process"):

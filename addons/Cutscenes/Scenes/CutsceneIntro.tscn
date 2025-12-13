@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bruuq4ncfxavj"]
 
-[ext_resource type="Script" uid="uid://c00yrvmyiv4wa" path="res://addons/Cutscenes/Scenes/CutsceneIntro.gd" id="1_5rk1f"]
+[ext_resource type="Script" uid="uid://c00yrvmyiv4wa" path="res://addons/Cutscenes/Scripts/CutsceneIntro.gd" id="1_5rk1f"]
 
 [node name="CutsceneIntro" type="Control"]
 layout_mode = 3

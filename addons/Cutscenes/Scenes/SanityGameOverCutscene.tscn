@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://cchlhsb5ddgi5"]
+
+[ext_resource type="Script" uid="uid://bs6y5a2sn3cuj" path="res://addons/Cutscenes/Scripts/SanityGameOverCutscene.gd" id="1_fhq5e"]
+
+[node name="SanityGameOverCutscene" type="CanvasLayer"]
+script = ExtResource("1_fhq5e")
+
+[node name="Fade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="DialogueLabel" type="Label" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "...
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ReturnTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
